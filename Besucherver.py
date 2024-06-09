@@ -3,6 +3,7 @@ from datetime import datetime
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+import sys
 
 verbindung = sqlite3.connect("besucherverwaltung.db")
 zeiger = verbindung.cursor()
@@ -197,7 +198,7 @@ def AbfrageAktBesucheranzahl():
     try:
         zeiger.execute("SELECT COUNT(*) FROM besucherliste WHERE auscheckzeit IS NULL")
         anzahl = zeiger.fetchone()
-        print(anzahl[0])
+        #print(anzahl[0])
     except:
         print("Error: Abfrage aktuelle Besucheranzahl")
     return anzahl[0]
@@ -257,7 +258,18 @@ def DeleteBesucher(besuchernr):
         print("Error: Delete Besucher")
 #DeleteBesucher(besucher)
 
+def function():
+    print("Hello World")
 
+if __name__ == "__main__":
+    if len(sys.argv) > 1:
+        function_name = sys.argv[1]
+        if function_name == "function":
+            print(AbfrageAktBesucheranzahl())
+        else:
+            print("Unknown function")
+    else:
+        print("No function specified")
 
 
 verbindung.close()

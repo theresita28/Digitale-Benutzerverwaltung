@@ -31,11 +31,35 @@
       />
     </div>
     <div class="visitorLabel">Aktuelle Besucher Anzahl:</div>
-    <div class="visitorNumber">50</div>
+    <div class="visitorNumber" id="visitorNumberCount"></div>
     <div class="buttonDiv">
-        <button class="button">Einchecken</button>
+        <button class="button" onclick="showCheckInDiv()">Einchecken</button>
         <button class="button">Auschecken</button>
     </div>
+    <div class="checkinMenu" id="checkInDiv">
+        <button onclick="hideCheckInDiv()">X</button>
+        <input type="search">
+        <button>+</button>
+        <ul class="visitorList">
+          <li>
+            <img src="User.png">
+            <p>Yannik Fischer</p>
+          </li>
+          <li>
+            <img src="User.png">
+            <p>Yannik Fischer</p>
+          </li>
+          <li>
+            <img src="User.png">
+            <p>Yannik Fischer</p>
+          </li>
+          <li>
+            <img src="User.png">
+            <p>Yannik Fischer</p>
+          </li>
+        </ul>
+    </div>
+    <pre id="output"></pre>
   </div>
   <script>
     function openNav() {
@@ -46,6 +70,26 @@
     function closeNav() {
     document.getElementById("mySidebar").style.width = "0";
     }
+
+    function showCheckInDiv() {
+      document.getElementById('checkInDiv').style.display = "block";
+    }
+
+    function hideCheckInDiv() {
+      document.getElementById('checkInDiv').style.display = "none";
+    }
+
+    window.addEventListener('load', () => {
+            fetch('http://localhost:3000/run-python?function=function')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('visitorNumberCount').innerText = data;
+                })
+                .catch(error => {
+                    document.getElementById('visitorNumberCount').innerText = `Error: ${error.message}`;
+                });
+        });
+
   </script>
   <style>
     .maindiv {
@@ -174,5 +218,26 @@
     position: absolute;
     top: 0;
     left: 20;
+}
+.checkInMenu {
+  background-color: #818181;
+  width: 50%;
+  height: 50%;
+  position: absolute;
+  top: 25%;
+  left: 25%;
+  padding: 10px;
+  display: none;
+}
+.visitorList {
+  padding-inline-start: 0px;
+}
+.visitorList li {
+  height: 50px;
+  display: flex;
+  
+}
+.visitorList img {
+  
 }
   </style>
