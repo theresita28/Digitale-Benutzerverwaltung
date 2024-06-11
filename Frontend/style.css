@@ -1,0 +1,229 @@
+.maindiv {
+    background-color: #fff;
+    display: flex;
+    padding-bottom: 53px;
+    flex-direction: column;
+    align-items: center;
+    font-weight: 500;
+  }
+  .topBar {
+    box-shadow: 0px 0.5px 1px 0px rgba(0, 0, 0, 0.1),
+      0px 4px 8px 0px rgba(0, 0, 0, 0.2);
+    background-color: var(--white-100, #fff);
+    align-self: stretch;
+    display: flex;
+    width: 97.6%;
+    gap: 20px;
+    font-size: 20px;
+    color: var(--black-87, rgba(0, 0, 0, 0.87));
+    line-height: 140%;
+    justify-content: space-between;
+    padding: 24px 16px;
+  }
+  @media (max-width: 991px) {
+    .topBar {
+      max-width: 97.6%;
+      flex-wrap: wrap;
+    }
+  }
+  .LeftTopBardiv {
+    display: flex;
+    gap: 20px;
+    justify-content: space-between;
+  }
+  .img {
+    aspect-ratio: 1;
+    object-fit: auto;
+    object-position: center;
+    width: 24px;
+    cursor: pointer;
+  }
+  .appName {
+    font-feature-settings: "clig" off, "liga" off;
+    font-family: Roboto, sans-serif;
+  }
+  .visitorLabel {
+    color: #000;
+    margin-top: 180px;
+    font: 32px/112.5% Roboto, sans-serif;
+  }
+  @media (max-width: 991px) {
+    .visitorLabel {
+      margin-top: 40px;
+    }
+  }
+  .visitorNumber {
+    color: #6200e8;
+    text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    -webkit-text-stroke-width: 1;
+    -webkit-text-stroke-color: #000;
+    margin-top: 78px;
+    font: 400 200px/48px Roboto, sans-serif;
+  }
+  @media (max-width: 991px) {
+    .visitorNumber {
+      margin-top: 40px;
+      font-size: 40px;
+      line-height: 11px;
+    }
+  }
+  .buttonDiv {
+    display: flex;
+    gap: 60px;
+    margin-top: 100px;
+  }
+  .button {
+    background-color: #6200e8;
+    width: 380px;
+    border-radius: 8px;
+    color: #fff;
+    border: none;
+    font: 500 20px/24px Roboto, sans-serif;
+    padding: 16px 24px;
+    text-align: center;
+    cursor: pointer;
+  }
+  .sidebar {
+      height: 100%; /* 100% Full-height */
+      width: 0; /* 0 width - change this with JavaScript */
+      position: fixed; /* Stay in place */
+      z-index: 1; /* Stay on top */
+      top: 0;
+      left: 0;
+      background-color: #fff; /* Black*/
+      overflow-x: hidden; /* Disable horizontal scroll */
+      box-shadow: 5px 5px 10px 0px rgba(0, 0, 0, 0.1);
+      padding-top: 60px; /* Place content 60px from the top */
+      transition: 0.5s; /* 0.5 second transition effect to slide in the sidebar */
+      }
+
+/* The sidebar links */
+.sidebar a {
+padding: 8px 8px 8px 32px;
+text-decoration: none;
+font-size: 25px;
+color: #818181;
+display: block;
+transition: 0.3s;
+}
+
+/* When you mouse over the navigation links, change their color */
+.sidebar a:hover {
+color: #f1f1f1;
+}
+
+/* Position and style the close button (top right corner) */
+.sidebar .closebtn {
+position: absolute;
+top: 0;
+right: 25px;
+font-size: 36px;
+margin-left: 50px;
+}
+.menuDiv h2 {
+  position: absolute;
+  top: 0;
+  left: 20;
+}
+#checkInDiv {
+background-color: #F8F8F8;
+width: 50rem;
+height: 50%;
+position: absolute;
+top: 25%;
+left: 25%;
+padding: 10px;
+display: none;
+
+}
+.checkinMenu input {
+    width: 88%;
+    height: 40px;
+    border-radius: 5px;
+    border: none;
+    background: url('search.png') no-repeat scroll 12px 12px;
+    padding-left: 55px;
+    background-color: #ffffff;
+    margin-right: 1%;
+}
+
+.closebtn {
+    background: none;
+    border: none;
+    font-size: 30px;
+    cursor: pointer;
+    color: #999898;
+    padding: none;
+    position: relative;
+    top: -3%;
+    left: 2%;
+}
+.addingBtn{
+    background-color: #6200e8;
+    width: 40px;
+    height: 40px;
+    border-radius: 500px;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+
+}
+.visitorList {
+padding-inline-start: 0px;
+}
+.visitorList li {
+height: 50px;
+display: flex;
+align-items: center;
+}
+
+#eincheckValidation {
+  background-color: #F8F8F8;
+  width: 50rem;
+  height: 500px;
+  position: absolute;
+  top: 25%;
+  left: 28%;
+  padding: 10px;
+  padding-left: 20px;
+  border-radius: 3px;
+  display: none;
+}  
+.validationDiv{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.validationDiv input {
+  width: 20rem;
+  height: 25px;
+  border-radius: 5px;
+}
+.nameDiv {
+  display: flex;
+  gap: 40px;
+}
+#eincheckValidation button {
+  margin-left: 25%;
+  margin-top: 40px;
+}
+.closebtncheckin {
+  background: none;
+  border: none;
+  font-size: 30px;
+  cursor: pointer;
+  color: #999898;
+  padding: none;
+  position: relative;
+  top: -115px;
+  left: 570px;
+}
+#error {
+  color: red;
+  font-size: 18px;
+  margin-top: 30px;
+  margin-left: 5px;
+  display: none;
+}

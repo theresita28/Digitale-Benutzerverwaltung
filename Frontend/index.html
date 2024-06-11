@@ -1,3 +1,12 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gym-Planner</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
 <div class="maindiv">
     <div id="mySidebar" class="sidebar">
         <div class="menuDiv">
@@ -28,40 +37,58 @@
         loading="lazy"
         src="https://cdn.builder.io/api/v1/image/assets/TEMP/8b04988775cbceefd2d0642c073b8bf238fabb2ef0ee687578482c64d83a8940?"
         class="img"
+        onclick="test()"
       />
     </div>
     <div class="visitorLabel">Aktuelle Besucher Anzahl:</div>
     <div class="visitorNumber" id="visitorNumberCount"></div>
     <div class="buttonDiv">
         <button class="button" onclick="showCheckInDiv()">Einchecken</button>
-        <button class="button">Auschecken</button>
+        <button class="button" onclick="showCheckOutDiv()">Auschecken</button>
     </div>
     <div class="checkinMenu" id="checkInDiv">
-        <button onclick="hideCheckInDiv()">X</button>
-        <input type="search">
-        <button>+</button>
-        <ul class="visitorList">
-          <li>
-            <img src="User.png">
-            <p>Yannik Fischer</p>
-          </li>
-          <li>
-            <img src="User.png">
-            <p>Yannik Fischer</p>
-          </li>
-          <li>
-            <img src="User.png">
-            <p>Yannik Fischer</p>
-          </li>
-          <li>
-            <img src="User.png">
-            <p>Yannik Fischer</p>
-          </li>
+        <input type="search" placeholder="Suche">
+        <button class="addingBtn" onclick="newUser()" >+</button>
+        <button onclick="hideCheckInDiv()" class="closebtn" >&#10006</button>
+        <h2>Besucherverlauf</h2>
+        <ul class="visitorList" id="visitorList">
         </ul>
     </div>
-    <pre id="output"></pre>
+    <div id="eincheckValidation">
+        <h2>Einchecken</h2>
+        <button onclick="closecheckInProcess()" class="closebtncheckin" >&#10006</button>
+        <div class="nameDiv">
+        <div class="validationDiv">
+          <label for="vorname">Vorname:</label>
+          <input type="text" id="vorname" name="vorname" required>
+        </div>
+        <div class="validationDiv">
+          <label for="nachname">Nachname:</label>
+          <input type="text" id="nachname" name="nachname" required>
+        </div>
+        </div>
+        <div class="nameDiv">
+        <div class="validationDiv">
+          <label for="besucher">BesucherNr.:</label>
+          <input type="text" id="besucher" name="besucher" required>
+        </div>
+        <div class="validationDiv">
+          <label for="ansprechpartner">Ansprechpartner:</label>
+          <input type="text" id="ansprechpartner" name="ansprechpartner" required>
+        </div>
+        </div>
+        <div class="nameDiv">
+        <div class="validationDiv">
+          <label for="aufenthaltsort">Aufenthaltsort:</label>
+          <input type="text" id="aufenthaltsort" name="aufenthaltsort" required>
+        </div>
+        <p id="error">Bitte alle Felder ausfüllen</p>
+        </div>
+        <button class="button" onclick="checkInProcess()">Einchecken</button>
+    </div>
   </div>
   <script>
+
     function openNav() {
     document.getElementById("mySidebar").style.width = "300px";
     }
@@ -71,12 +98,179 @@
     document.getElementById("mySidebar").style.width = "0";
     }
 
-    function showCheckInDiv() {
+    async function checkInProcessInit(data) {
+      const id = data.split(' ')[2];
+      const nachname = data.split(' ')[1];
+      const vorname = data.split(' ')[0];
+      document.getElementById('checkInDiv').style.display = "none";
+      document.getElementById('eincheckValidation').style.display = "block";
+      document.getElementById('besucher').value = id;
+      document.getElementById('vorname').value = vorname;
+      document.getElementById('nachname').value = nachname;
+    }
+
+    function closecheckInProcess() {
       document.getElementById('checkInDiv').style.display = "block";
+      document.getElementById('eincheckValidation').style.display = "none";
+    }
+
+    async function checkInProcess() {
+      id = document.getElementById('besucher').value;
+      vorname = document.getElementById('vorname').value;
+      nachname = document.getElementById('nachname').value;
+      ansprechpartner = document.getElementById('ansprechpartner').value;
+      aufenthaltsort = document.getElementById('aufenthaltsort').value;
+      if (id != "" && vorname != "" && nachname != "" && ansprechpartner != "" && aufenthaltsort != "") {
+        document.getElementById('error').style.display = "none";
+        const functionName = 'einchecken';
+        const arg1 = id;
+        const arg2 = ansprechpartner;
+        const arg3 = aufenthaltsort;
+        let queryString = `function=${functionName}`;
+            if (arg1) queryString += `&arg1=${arg1}`;
+            if (arg2) queryString += `&arg2=${arg2}`;
+            if (arg3) queryString += `&arg3=${arg3}`;
+        await fetch('http://localhost:3000/run-python?' + queryString)
+                .then(response => response.text())
+                .then(data => {
+                    console.log(data);
+                })
+                .catch(error => {
+                    console.log(`Error: ${error.message}`);
+                });
+      }
+      else {
+        document.getElementById('error').style.display = "block";
+      }
+    }
+
+    async function showCheckInDiv() {
+      document.getElementById('checkInDiv').style.display = "block";
+      const ul = document.getElementById('visitorList');
+      ul.innerHTML = '';
+      let Count = 0;
+      await fetch('http://localhost:3000/run-python?function=anzahl')
+                .then(response => response.text())
+                .then(data => {
+                      Count = data;
+                })
+                .catch(error => {
+                    console.log(`Error: ${error.message}`);
+                });
+      for (let i = 1; i <= Count; i++) {
+        const functionName = 'returnVisitorNameandNumber';
+        const arg1 = i;
+        let queryString = `function=${functionName}`;
+            if (arg1) queryString += `&arg1=${arg1}`;
+        await fetch('http://localhost:3000/run-python?' + queryString)
+                .then(response => response.text())
+                .then(data => {
+                    if (data == "") {
+                      console.log('Besucher ist bereits eingecheckt');
+                    }
+                    else {
+                    const li = document.createElement('li');
+                    const img = document.createElement('img');
+                    img.src = 'User.png';
+                    img.alt = 'User';
+                    img.width = 50;
+                    img.height = 50;
+                    li.appendChild(img);
+                    const span = document.createElement('span');
+                    span.innerText = data;
+                    li.appendChild(span);
+                    li.id = i;
+                    li.onclick = function() {
+                      checkInProcessInit(data);
+                    };
+                    ul.appendChild(li);
+                  }
+                })
+                .catch(error => {
+                    console.log(`Error: ${error.message}`);
+                });
+    }
+    hastobeupdated = false;
+    } 
+    
+    function checkOutProcess(data) {
+      const id = data.split(' ')[2];
+      const functionName = 'auschecken';
+      const arg1 = id;
+      let queryString = `function=${functionName}`;
+            if (arg1) queryString += `&arg1=${arg1}`;
+      fetch('http://localhost:3000/run-python?' + queryString)
+                .then(response => response.text())
+                .then(data => {
+                    console.log(data);
+                })
+                .catch(error => {
+                    console.log(`Error: ${error.message}`);
+                });
     }
 
     function hideCheckInDiv() {
       document.getElementById('checkInDiv').style.display = "none";
+
+    }
+    function newUser() {
+      const functionName = 'besucherAnlegen';
+      const arg1 = 'Max';
+      const arg2 = 'Mustermann';
+      const arg3 = 'visitor';
+      let queryString = `function=${functionName}`;
+            if (arg1) queryString += `&arg1=${arg1}`;
+            if (arg2) queryString += `&arg2=${arg2}`;
+            if (arg3) queryString += `&arg3=${arg3}`;
+      fetch('http://localhost:3000/run-python?' + queryString)
+                .then(response => response.text())
+                .then(data => {
+                    console.log(data);
+                })
+                .catch(error => {
+                    console.log(`Error: ${error.message}`);
+                });
+    }
+
+    function showCheckOutDiv() {
+      document.getElementById('checkInDiv').style.display = "block";
+      const ul = document.getElementById('visitorList');
+      ul.innerHTML = '';
+      fetch('http://localhost:3000/run-python?function=aktuelleBesucher')
+                .then(response => response.text())
+                .then(data => {
+                  var sepearetedData = data.split(/\r?\n|\r|\n/g);
+                      for (let i = 0; i < sepearetedData.length; i++) {
+                      const li = document.createElement('li');
+                      const img = document.createElement('img');
+                      img.src = 'User.png';
+                      img.alt = 'User';
+                      img.width = 50;
+                      img.height = 50;
+                      li.appendChild(img);
+                      const span = document.createElement('span');
+                      span.innerText = sepearetedData[i];
+                      li.appendChild(span);
+                      li.onclick = function() {
+                        checkOutProcess(sepearetedData[i]);
+                      };
+                      ul.appendChild(li);
+                      }
+                })
+                .catch(error => {
+                    console.log(`Error: ${error.message}`);
+                });
+    }
+    function test() {
+      console.log('test');
+      fetch('http://localhost:3000/run-python?function=anzahl')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('visitorNumberCount').innerText = data;
+                })
+                .catch(error => {
+                    document.getElementById('visitorNumberCount').innerText = `Error: ${error.message}`;
+                });
     }
 
     window.addEventListener('load', () => {
@@ -91,153 +285,5 @@
         });
 
   </script>
-  <style>
-    .maindiv {
-      background-color: #fff;
-      display: flex;
-      padding-bottom: 53px;
-      flex-direction: column;
-      align-items: center;
-      font-weight: 500;
-    }
-    .topBar {
-      box-shadow: 0px 0.5px 1px 0px rgba(0, 0, 0, 0.1),
-        0px 4px 8px 0px rgba(0, 0, 0, 0.2);
-      background-color: var(--white-100, #fff);
-      align-self: stretch;
-      display: flex;
-      width: 97.6%;
-      gap: 20px;
-      font-size: 20px;
-      color: var(--black-87, rgba(0, 0, 0, 0.87));
-      line-height: 140%;
-      justify-content: space-between;
-      padding: 24px 16px;
-    }
-    @media (max-width: 991px) {
-      .topBar {
-        max-width: 97.6%;
-        flex-wrap: wrap;
-      }
-    }
-    .LeftTopBardiv {
-      display: flex;
-      gap: 20px;
-      justify-content: space-between;
-    }
-    .img {
-      aspect-ratio: 1;
-      object-fit: auto;
-      object-position: center;
-      width: 24px;
-      cursor: pointer;
-    }
-    .appName {
-      font-feature-settings: "clig" off, "liga" off;
-      font-family: Roboto, sans-serif;
-    }
-    .visitorLabel {
-      color: #000;
-      margin-top: 180px;
-      font: 32px/112.5% Roboto, sans-serif;
-    }
-    @media (max-width: 991px) {
-      .visitorLabel {
-        margin-top: 40px;
-      }
-    }
-    .visitorNumber {
-      color: #6200e8;
-      text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-      -webkit-text-stroke-width: 1;
-      -webkit-text-stroke-color: #000;
-      margin-top: 78px;
-      font: 400 200px/48px Roboto, sans-serif;
-    }
-    @media (max-width: 991px) {
-      .visitorNumber {
-        margin-top: 40px;
-        font-size: 40px;
-        line-height: 11px;
-      }
-    }
-    .buttonDiv {
-      display: flex;
-      gap: 60px;
-      margin-top: 100px;
-    }
-    .button {
-      background-color: #6200e8;
-      width: 380px;
-      border-radius: 8px;
-      color: #fff;
-      border: none;
-      font: 500 20px/24px Roboto, sans-serif;
-      padding: 16px 24px;
-      text-align: center;
-      cursor: pointer;
-    }
-    .sidebar {
-        height: 100%; /* 100% Full-height */
-        width: 0; /* 0 width - change this with JavaScript */
-        position: fixed; /* Stay in place */
-        z-index: 1; /* Stay on top */
-        top: 0;
-        left: 0;
-        background-color: #fff; /* Black*/
-        overflow-x: hidden; /* Disable horizontal scroll */
-        box-shadow: 5px 5px 10px 0px rgba(0, 0, 0, 0.1);
-        padding-top: 60px; /* Place content 60px from the top */
-        transition: 0.5s; /* 0.5 second transition effect to slide in the sidebar */
-        }
-
-/* The sidebar links */
-.sidebar a {
-  padding: 8px 8px 8px 32px;
-  text-decoration: none;
-  font-size: 25px;
-  color: #818181;
-  display: block;
-  transition: 0.3s;
-}
-
-/* When you mouse over the navigation links, change their color */
-.sidebar a:hover {
-  color: #f1f1f1;
-}
-
-/* Position and style the close button (top right corner) */
-.sidebar .closebtn {
-  position: absolute;
-  top: 0;
-  right: 25px;
-  font-size: 36px;
-  margin-left: 50px;
-}
-.menuDiv h2 {
-    position: absolute;
-    top: 0;
-    left: 20;
-}
-.checkInMenu {
-  background-color: #818181;
-  width: 50%;
-  height: 50%;
-  position: absolute;
-  top: 25%;
-  left: 25%;
-  padding: 10px;
-  display: none;
-}
-.visitorList {
-  padding-inline-start: 0px;
-}
-.visitorList li {
-  height: 50px;
-  display: flex;
-  
-}
-.visitorList img {
-  
-}
-  </style>
+</body>
+</html>

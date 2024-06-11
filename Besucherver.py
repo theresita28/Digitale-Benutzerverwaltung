@@ -132,13 +132,14 @@ def BesucherAnlegen(vname,name,rolle):
 
     try:
      zeiger.execute("INSERT INTO besucher VALUES (?,?,?,?)", (besuchernr,vorname, nachname,rolle))
+     print("Besucher wurde erfolgreich angelegt.")
     except:
         print("Error: Besucher anlegen")
     verbindung.commit()
-    SendMail()
+    #SendMail()
 
-CreateTables()   # muss
-#BesucherAnlegen("Theresia","Deubert", "Handwerker")
+#CreateTables()   # muss
+#BesucherAnlegen("There","Deubert", "Handwerker")
 
 
 #Einchecken/Auschecken von Besuchern-----------------------------------------------
@@ -183,9 +184,9 @@ def auschecken(besucher):
 
 
 
-besucher = 3
-ansprechpartner = "Mister x"
-aufenthaltsort = "B240"
+#besucher = 3
+#ansprechpartner = "Mister x"
+#aufenthaltsort = "B240"
 
 #print( type(besucher))        für Test
 
@@ -208,7 +209,16 @@ def AbfrageAktBesucheranzahl():
 
 #Abfrage Besucheranzahl zu bestimmten Datum-----------------------------------------------------
 #zeitpunkt = datetime.datetime(2023, 5, 30)     für Test Datentyp Date
-zeitpunkt = "30.05.2024"
+#zeitpunkt = "30.05.2024"
+
+def BesucherAnzahl():
+    try:
+        zeiger.execute("SELECT COUNT(*) FROM besucher")
+        anzahl = zeiger.fetchone()[0]
+        #print(anzahl[0])
+    except:
+        print("Error: Abfrage Besucheranzahl")
+    return anzahl
 
 def AbfrageBesucheranzahl(zeitpunkt):
     try:
@@ -248,7 +258,7 @@ def UpdateBesucher(besucher, updatedValue):
 
 #Löschen von Besucher-------------
 
-besucher = 4
+#besucher = 4
 def DeleteBesucher(besuchernr):
     try:
         zeiger.execute("DELETE FROM besucher WHERE besuchernr=?", (besuchernr,))
@@ -258,14 +268,69 @@ def DeleteBesucher(besuchernr):
         print("Error: Delete Besucher")
 #DeleteBesucher(besucher)
 
-def function():
-    print("Hello World")
+#Abfrage aller Besucher----------------------------------------------------------------
+def AbfrageBesucher():
+    try:
+        zeiger.execute("SELECT * FROM besucher")
+        inhalt = zeiger.fetchall()
+        print(inhalt)
+    except:
+        print("Error: Abfrage Besucher")
+
+def returnNotCheckedInBesucher(besuchernr):
+    try:
+        zeiger.execute("SELECT * FROM besucher WHERE besuchernr = ?", (besuchernr,))
+        inhalt = zeiger.fetchall()
+        if isBesucherCheckedIn(besuchernr):
+            return
+        else:
+            print(inhalt[0][1] + " " + inhalt[0][2] + " " + str(inhalt[0][0]))
+    except:
+        print("Error: Abfrage Besucher")
+
+def isBesucherCheckedIn(besuchernr):
+    try:
+        zeiger.execute("SELECT * FROM besucherliste WHERE besucher = ? and auscheckzeit IS NULL", (besuchernr,))
+        inhalt = zeiger.fetchall()
+        if len(inhalt) > 0:
+            return True
+        else:
+            return False
+    except:
+        print("Error: Abfrage Besucher")
+
+def ArrayAktBesucheranzahl():
+    try:
+
+        zeiger.execute("""SELECT b1.besucher, b2.vorname, b2.nachname, b2.Rolle, b1.eincheckzeit, b1.ansprechpartner, b1.Aufenthaltsort
+                    FROM besucherliste b1, besucher b2 
+                    WHERE auscheckzeit IS NULL and b1.besucher = b2.besuchernr""")
+        inhalt = zeiger.fetchall()
+        for i in range(len(inhalt)):
+            print(inhalt[i][1] + " " + inhalt[i][2] + " " + str(inhalt[i][0]))
+    except:
+        print("Error: Abfrage Besucheranzahl")
+
+def aktuelleBesucher():
+    ArrayAktBesucheranzahl()
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         function_name = sys.argv[1]
         if function_name == "function":
             print(AbfrageAktBesucheranzahl())
+        elif function_name == "aktuelleBesucher":
+            aktuelleBesucher()
+        elif function_name == "besucherAnlegen":
+            BesucherAnlegen(sys.argv[2],sys.argv[3],sys.argv[4])
+        elif function_name == "anzahl":
+            print(BesucherAnzahl())
+        elif function_name == "returnVisitorNameandNumber":
+            returnNotCheckedInBesucher(sys.argv[2])
+        elif function_name == "einchecken":
+            einchecken(sys.argv[2],sys.argv[3],sys.argv[4])
+        elif function_name == "auschecken":
+            auschecken(sys.argv[2])
         else:
             print("Unknown function")
     else:
