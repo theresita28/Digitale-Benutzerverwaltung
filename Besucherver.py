@@ -273,7 +273,8 @@ def AbfrageBesucher():
     try:
         zeiger.execute("SELECT * FROM besucher")
         inhalt = zeiger.fetchall()
-        print(inhalt)
+        for i in range(len(inhalt)):
+            print(inhalt[i][1] + " " + inhalt[i][2] + " " + str(inhalt[i][0]) + " " + inhalt[i][3])
     except:
         print("Error: Abfrage Besucher")
 
@@ -310,7 +311,17 @@ def ArrayAktBesucheranzahl():
             print(inhalt[i][1] + " " + inhalt[i][2] + " " + str(inhalt[i][0]))
     except:
         print("Error: Abfrage Besucheranzahl")
+def ArrayAktBesucheranzahl2():
+    try:
 
+        zeiger.execute("""SELECT b1.besucher, b2.vorname, b2.nachname, b2.Rolle, b1.eincheckzeit, b1.ansprechpartner, b1.Aufenthaltsort
+                    FROM besucherliste b1, besucher b2 
+                    WHERE auscheckzeit IS NULL and b1.besucher = b2.besuchernr""")
+        inhalt = zeiger.fetchall()
+        for i in range(len(inhalt)):
+            print(inhalt[i][1] + " " + inhalt[i][2] + " " + str(inhalt[i][0]) + " " + inhalt[i][3] + " " + inhalt[i][4] + " " + inhalt[i][5] + " " + inhalt[i][6])
+    except:
+        print("Error: Abfrage Besucheranzahl")
 def aktuelleBesucher():
     ArrayAktBesucheranzahl()
 
@@ -331,6 +342,10 @@ if __name__ == "__main__":
             einchecken(sys.argv[2],sys.argv[3],sys.argv[4])
         elif function_name == "auschecken":
             auschecken(sys.argv[2])
+        elif function_name == "besucherliste":
+            AbfrageBesucher()
+        elif function_name == "aktuellebesucherliste":
+            ArrayAktBesucheranzahl2()
         else:
             print("Unknown function")
     else:

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gym-Planner</title>
+    <title>Besucherverwaltung</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -14,11 +14,13 @@
             <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
         </div>
         <hr>
-        <a href="#">Besucherlisten</a>
+        <a href="index.html" style="color: #6200e8;">Dashboard</a>
+        <hr>
+        <a href="visitorlist.html">Besucherlisten</a>
         <hr>
         <a href="#">Besucherausweis erstellen</a>
         <hr>
-        <a href="#">Besucher Verwalten</a>
+        <a href="visitorsettings.html">Besucher Verwalten</a>
         <hr>
         <a href="#">Einstellungen</a>
         <hr>
@@ -31,7 +33,7 @@
           class="img"
           onclick="openNav()"
         />
-        <div class="appName">App name</div>
+        <div class="appName">Besucherverwaltung</div>
       </div>
       <img
         loading="lazy"
@@ -48,14 +50,14 @@
     </div>
     <div class="checkinMenu" id="checkInDiv">
         <input type="search" placeholder="Suche">
-        <button class="addingBtn" onclick="newUser()" >+</button>
+        <button class="addingBtn" onclick="newVisitorInit()" >+</button>
         <button onclick="hideCheckInDiv()" class="closebtn" >&#10006</button>
         <h2>Besucherverlauf</h2>
         <ul class="visitorList" id="visitorList">
         </ul>
     </div>
     <div id="eincheckValidation">
-        <h2>Einchecken</h2>
+        <h2 id="h2InVisitorDiv"></h2>
         <button onclick="closecheckInProcess()" class="closebtncheckin" >&#10006</button>
         <div class="nameDiv">
         <div class="validationDiv">
@@ -69,25 +71,72 @@
         </div>
         <div class="nameDiv">
         <div class="validationDiv">
-          <label for="besucher">BesucherNr.:</label>
+          <label for="besucher" id="besucherlabel">BesucherNr.:</label>
           <input type="text" id="besucher" name="besucher" required>
         </div>
         <div class="validationDiv">
-          <label for="ansprechpartner">Ansprechpartner:</label>
+          <label for="ansprechpartner" id="ansprechpartnerlabel">Ansprechpartner:</label>
           <input type="text" id="ansprechpartner" name="ansprechpartner" required>
         </div>
         </div>
         <div class="nameDiv">
         <div class="validationDiv">
-          <label for="aufenthaltsort">Aufenthaltsort:</label>
+          <label for="aufenthaltsort" id="aufenthaltsortlabel">Aufenthaltsort:</label>
           <input type="text" id="aufenthaltsort" name="aufenthaltsort" required>
         </div>
         <p id="error">Bitte alle Felder ausfüllen</p>
         </div>
-        <button class="button" onclick="checkInProcess()">Einchecken</button>
+        <button class="button" id="eincheckbtn" onclick="checkInProcess()">Einchecken</button>
+        <button class="button" id="erstellbtn" style="display: none;" onclick="newVisitor()">Erstellen</button>
     </div>
   </div>
   <script>
+
+function newVisitorInit() {
+      document.getElementById('h2InVisitorDiv').innerText = 'Neuer Besucher';
+      document.getElementById('eincheckbtn').style.display = "none";
+      document.getElementById('erstellbtn').style.display = "block";
+      document.getElementById('vorname').value = '';
+      document.getElementById('nachname').value = '';
+      document.getElementById('besucherlabel').innerHTML = 'Rolle:';
+      document.getElementById('besucher').value = '';
+      document.getElementById('ansprechpartner').value = '';
+      document.getElementById('aufenthaltsort').value = '';
+      document.getElementById('ansprechpartner').style.display = "none";
+      document.getElementById('aufenthaltsort').style.display = "none";
+      document.getElementById('ansprechpartnerlabel').style.display = "none";
+      document.getElementById('aufenthaltsortlabel').style.display = "none";
+      document.getElementById('checkInDiv').style.display = "none";
+      document.getElementById('eincheckValidation').style.display = "block";
+    }
+
+function newVisitor() {
+      vorname = document.getElementById('vorname').value;
+      nachname = document.getElementById('nachname').value;
+      rolle = document.getElementById('besucher').value;
+      if (vorname != "" && nachname != "" && rolle != "") {
+        document.getElementById('error').style.display = "none";
+        const functionName = 'besucherAnlegen';
+        const arg1 = vorname;
+        const arg2 = nachname;
+        const arg3 = rolle;
+        let queryString = `function=${functionName}`;
+            if (arg1) queryString += `&arg1=${arg1}`;
+            if (arg2) queryString += `&arg2=${arg2}`;
+            if (arg3) queryString += `&arg3=${arg3}`;
+        fetch('http://localhost:3000/run-python?' + queryString)
+                .then(response => response.text())
+                .then(data => {
+                    console.log(data);
+                })
+                .catch(error => {
+                    console.log(`Error: ${error.message}`);
+                });
+      }
+      else {
+        document.getElementById('error').style.display = "block";
+      }
+}
 
     function openNav() {
     document.getElementById("mySidebar").style.width = "300px";
@@ -102,11 +151,16 @@
       const id = data.split(' ')[2];
       const nachname = data.split(' ')[1];
       const vorname = data.split(' ')[0];
+      document.getElementById('h2InVisitorDiv').innerText = 'Einchecken von ' + vorname + ' ' + nachname;
+      document.getElementById('eincheckbtn').style.display = "block";
+      document.getElementById('erstellbtn').style.display = "none";
       document.getElementById('checkInDiv').style.display = "none";
       document.getElementById('eincheckValidation').style.display = "block";
       document.getElementById('besucher').value = id;
       document.getElementById('vorname').value = vorname;
       document.getElementById('nachname').value = nachname;
+      document.getElementById('ansprechpartner').value = '';
+      document.getElementById('aufenthaltsort').value = '';
     }
 
     function closecheckInProcess() {
@@ -243,6 +297,7 @@
                       for (let i = 0; i < sepearetedData.length; i++) {
                       const li = document.createElement('li');
                       const img = document.createElement('img');
+                      const btn = document.createElement('button');
                       img.src = 'User.png';
                       img.alt = 'User';
                       img.width = 50;
@@ -251,8 +306,15 @@
                       const span = document.createElement('span');
                       span.innerText = sepearetedData[i];
                       li.appendChild(span);
-                      li.onclick = function() {
+                      btn.innerText = 'Auschecken';
+                      btn.onclick = function() {
                         checkOutProcess(sepearetedData[i]);
+                      };
+                      btn.style.display = 'none';
+                      li.appendChild(btn);
+                      li.id = i;
+                      li.onclick = function() {
+                        listSelected(i)
                       };
                       ul.appendChild(li);
                       }
@@ -261,6 +323,21 @@
                     console.log(`Error: ${error.message}`);
                 });
     }
+
+    function listSelected(id) {
+      const ul = document.getElementById('visitorList');
+      for (let i = 0; i < ul.children.length; i++) {
+        if (i == id) {
+          ul.children[i].children[2].style.display = 'block';
+          ul.children[i].style.backgroundColor = '#f0f0f0';
+        }
+        else {
+          ul.children[i].children[2].style.display = 'none';
+          ul.children[i].style.backgroundColor = '#F8F8F8';
+        }
+      }
+    }
+
     function test() {
       console.log('test');
       fetch('http://localhost:3000/run-python?function=anzahl')

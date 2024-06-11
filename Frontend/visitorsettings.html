@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Besucherverwaltung</title>
+    <link rel="stylesheet" href="basicstyle.css">
+</head>
+<body>
+<div class="maindiv">
+    <div id="mySidebar" class="sidebar">
+        <div class="menuDiv">
+            <h2>Menu</h2>
+            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        </div>
+        <hr>
+        <a href="index.html">Dashboard</a>
+        <hr>
+        <a href="visitorlist.html">Besucherlisten</a>
+        <hr>
+        <a href="#">Besucherausweis erstellen</a>
+        <hr>
+        <a href="visitorsettings.html" style="color: #6200e8;">Besucher Verwalten</a>
+        <hr>
+        <a href="#">Einstellungen</a>
+        <hr>
+    </div>
+    <div class="topBar">
+      <div class="LeftTopBardiv">
+        <img
+          loading="lazy"
+          src="https://cdn.builder.io/api/v1/image/assets/TEMP/6de3328a928ca8ab6c5b3deb73042aca0d0e2409eda060251142729b19f9ee86?"
+          class="img"
+          onclick="openNav()"
+        />
+        <div class="appName">Besucherverwaltung</div>
+      </div>
+      <img
+        loading="lazy"
+        src="https://cdn.builder.io/api/v1/image/assets/TEMP/8b04988775cbceefd2d0642c073b8bf238fabb2ef0ee687578482c64d83a8940?"
+        class="img"
+        onclick="test()"
+      />
+    </div>
+    <div class="checkinMenu" id="checkInDiv">
+        <input type="search" placeholder="Suche">
+        <button class="addingBtn" onclick="newVisitorInit()" >+</button>
+        <h2>Alle Besucher:</h2>
+        <ul class="visitorList" id="visitorList">
+        </ul>
+    </div>
+    <script>
+    function openNav() {
+    document.getElementById("mySidebar").style.width = "300px";
+    }
+
+    /* Set the width of the sidebar to 0 and the left margin of the page content to 0 */
+    function closeNav() {
+    document.getElementById("mySidebar").style.width = "0";
+    }
+
+    </script>
+    <style>
+    #checkInDiv {
+        background-color: #F8F8F8;
+        width: 50rem;
+        height: 50%;
+        position: absolute;
+        top: 25%;
+        left: 25%;
+        padding: 10px;
+
+    }
+    .checkinMenu input {
+        width: 88%;
+        height: 40px;
+        border-radius: 5px;
+        border: none;
+        background: url('search.png') no-repeat scroll 12px 12px;
+        padding-left: 55px;
+        background-color: #ffffff;
+        margin-right: 1%;
+    }
+
+    .closebtn {
+        background: none;
+        border: none;
+        font-size: 30px;
+        cursor: pointer;
+        color: #999898;
+        padding: none;
+        position: relative;
+        top: -3%;
+        left: 2%;
+    }
+    .addingBtn{
+        background-color: #6200e8;
+        width: 40px;
+        height: 40px;
+        border-radius: 500px;
+        border: none;
+        color: white;
+        font-size: 20px;
+        cursor: pointer;
+
+    }
+    .visitorList {
+    padding-inline-start: 0px;
+    }
+    .visitorList li {
+    height: 50px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    }
+    .visitorList li button {
+    background-color: #6200e8;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    margin-left: auto;
+    margin-right: 10px;
+    }
+    </style>
