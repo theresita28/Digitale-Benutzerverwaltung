@@ -333,7 +333,7 @@ if __name__ == "__main__":
         elif function_name == "aktuelleBesucher":
             aktuelleBesucher()
         elif function_name == "besucherAnlegen":
-            BesucherAnlegen(sys.argv[2],sys.argv[3],sys.argv[4])
+            BesucherAnlegen(sys.argv[2],sys.argv[3],sys.argv[4], sys.argv[5])
         elif function_name == "anzahl":
             print(BesucherAnzahl())
         elif function_name == "returnVisitorNameandNumber":

@@ -3,6 +3,7 @@ from datetime import datetime
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+import sys
 
 verbindung = sqlite3.connect("besucherverwaltung.db")
 zeiger = verbindung.cursor()
@@ -36,15 +37,25 @@ def CreateTables():
     FOREIGN KEY (besucher)
      REFERENCES besucher (besuchernr) 
     );"""
+    try:
+        zeiger.execute(sql_anweisung)
+    except:
+        print("Creating Table failed")
     #  FOREIGN KEY (besucher)
     #    REFERENCES besucher (besuchernr) 
-    
-
+def deleteTables():
+    sql_anweisung = "DROP TABLE IF EXISTS besucher"
+    try:
+     zeiger.execute(sql_anweisung)
+    except:
+        print("Creating Table failed") 
+    sql_anweisung = "DROP TABLE IF EXISTS besucherliste"
     try:
      zeiger.execute(sql_anweisung)
     except:
         print("Creating Table failed")
     verbindung.commit()
+
 
 def proofUniqueNumber(proofedNumber,counts):
     uniqueNumber = True
@@ -131,10 +142,8 @@ def BesucherAnlegen(vname,name,email,rolle):
     nachname = name
     email = email
 
-    try:
-     zeiger.execute("INSERT INTO besucher VALUES (?,?,?,?,?)", (besuchernr,vorname, nachname,email,rolle))
-    except:
-        print("Error: Besucher anlegen")
+
+    zeiger.execute("INSERT INTO besucher VALUES (?,?,?,?,?)", (besuchernr,vorname, nachname,email,rolle))
     verbindung.commit()
     SendMail(email)
 
@@ -184,14 +193,14 @@ def auschecken(besucher):
 
 
 
-besucher = 3
+besucher = 1
 ansprechpartner = "Mister x"
 aufenthaltsort = "B240"
 
 #print( type(besucher))        für Test
 
+    
 
-#einchecken(besucher,ansprechpartner, aufenthaltsort)
 #auschecken(4)
 
 #Abfrage der aktuellen Besucheranzahl----------------------------------------------------------------
@@ -201,26 +210,48 @@ def AbfrageAktBesucheranzahl():
         anzahl = zeiger.fetchone()
         print(anzahl[0])
     except:
-        print("Error: Abfrage aktuelle Besucheranzahl")
-    return anzahl[0]
+        return
+
+def BesucherAnzahl():
+    try:
+        zeiger.execute("SELECT COUNT(*) FROM besucher")
+        anzahl = zeiger.fetchone()[0]
+        #print(anzahl[0])
+    except:
+        return
+    return anzahl
+
 
 #anzahl = AbfrageAktBesucheranzahl()
 #print("Die aktuelle Besucheranzahl ist " + str(anzahl))
 #Abfrage mit Rückgabe von Besucchern
 def ArrayAktBesucheranzahl():
     try:
-        
-        zeiger.execute("""SELECT b1.besucher, b2.vorname, b2.nachname, b2.email, b2.rolle, b1.eincheckzeit, b1.ansprechpartner, b1.aufenthaltsort
+
+        zeiger.execute("""SELECT b1.besucher, b2.vorname, b2.nachname, b2.Rolle, b1.eincheckzeit, b1.ansprechpartner, b1.Aufenthaltsort
                     FROM besucherliste b1, besucher b2 
                     WHERE auscheckzeit IS NULL and b1.besucher = b2.besuchernr""")
         inhalt = zeiger.fetchall()
-        #print(inhalt)
-        print("Es wurden Besucher zum aktuellen Zeitpunkt gefunden: " + str(inhalt))
+        for i in range(len(inhalt)):
+            print(inhalt[i][1] + " " + inhalt[i][2] + " " + str(inhalt[i][0]))
     except:
         print("Error: Abfrage Besucheranzahl")
-#ArrayAktBesucheranzahl()
-#Abfrage Besucheranzahl zu bestimmten Datum-----------------------------------------------------
-#zeitpunkt = datetime.datetime(2023, 5, 30)     für Test Datentyp Date
+def ArrayAktBesucheranzahl2():
+    try:
+
+        zeiger.execute("""SELECT b1.besucher, b2.vorname, b2.nachname, b2.Rolle, b2.email, b1.eincheckzeit, b1.ansprechpartner, b1.aufenthaltsort
+                    FROM besucherliste b1, besucher b2 
+                    WHERE auscheckzeit IS NULL and b1.besucher = b2.besuchernr""")
+        inhalt = zeiger.fetchall()
+        for i in range(len(inhalt)):
+            print(inhalt[i][1] + " " + inhalt[i][2] + " " + str(inhalt[i][0]) + " " + inhalt[i][3] + " " + inhalt[i][4] + " " + inhalt[i][5] + " " + inhalt[i][6] + " " + inhalt[i][7] )
+    except:
+        print("Error: Abfrage Besucheranzahl")
+
+def aktuelleBesucher():
+    ArrayAktBesucheranzahl()
+
+
 zeitpunkt = "12.06.2024"
 
 def AbfrageBesucheranzahl(zeitpunkt):
@@ -242,27 +273,12 @@ def AbfrageBesucheranzahl(zeitpunkt):
 #Aktualisieren/Löschen der Besucherdaten---------------------------------------------------
 #Aktualisieren von Nachname oder Rolle
 
-def UpdateBesucher(besucher, updatedValue):
-    
-    #Update Besuchernachname-----------------
-    """ if(proofBesuchernr(besucher)):
-        zeiger.execute("UPDATE besucher SET nachname=? WHERE besuchernr=?", (updatedValue, besucher))
+def UpdateBesucher(besuchernr, vorname, nachname, email, rolle):
+    try:
+        zeiger.execute("UPDATE besucher SET vorname=?, nachname=?, email=?, rolle=? WHERE besuchernr=?", (vorname, nachname, email, rolle, besuchernr))
         verbindung.commit()
-    else:
-        print("Besuchernummer gibt es nicht.") """
-    #Update Rolle--------------------------------
-    """ if(proofBesuchernr(besucher)):
-        zeiger.execute("UPDATE besucher SET rolle=? WHERE besuchernr=?", (updatedValue, besucher))
-        verbindung.commit()
-    else:
-        print("Besuchernummer gibt es nicht.") """
-    
-    # Update email---------------------------
-    if(proofBesuchernr(besucher)):
-        zeiger.execute("UPDATE besucher SET email=? WHERE besuchernr=?", (updatedValue, besucher))
-        verbindung.commit()
-    else:
-        print("Besuchernummer gibt es nicht.")
+    except:
+        print("Error: Update Besucher")
 
 #UpdateBesucher(1,"t.deubert@example.com")
 
@@ -277,6 +293,68 @@ def DeleteBesucher(besuchernr):
     except:
         print("Error: Delete Besucher")
 #DeleteBesucher(besucher)
+
+
+def AbfrageBesucher():
+    try:
+        zeiger.execute("SELECT * FROM besucher")
+        inhalt = zeiger.fetchall()
+        for i in range(len(inhalt)):
+            print(inhalt[i][1] + " " + inhalt[i][2] + " " + str(inhalt[i][0]) + " " + inhalt[i][3] + " " + inhalt[i][4])
+    except:
+        return
+
+def returnNotCheckedInBesucher(besuchernr):
+    try:
+        zeiger.execute("SELECT * FROM besucher WHERE besuchernr = ?", (besuchernr,))
+        inhalt = zeiger.fetchall()
+        if isBesucherCheckedIn(besuchernr):
+            return
+        else:
+            print(inhalt[0][1] + " " + inhalt[0][2] + " " + str(inhalt[0][0]))
+    except:
+        return
+
+def isBesucherCheckedIn(besuchernr):
+    try:
+        zeiger.execute("SELECT * FROM besucherliste WHERE besucher = ? and auscheckzeit IS NULL", (besuchernr,))
+        inhalt = zeiger.fetchall()
+        if len(inhalt) > 0:
+            return True
+        else:
+            return False
+    except:
+        return
+
+if __name__ == "__main__":
+    if len(sys.argv) > 1:
+        function_name = sys.argv[1]
+        if function_name == "function":
+            AbfrageAktBesucheranzahl()
+        elif function_name == "aktuelleBesucher":
+            aktuelleBesucher()
+        elif function_name == "besucherAnlegen":
+            BesucherAnlegen(sys.argv[2],sys.argv[3],sys.argv[4], sys.argv[5])
+        elif function_name == "anzahl":
+            print(BesucherAnzahl())
+        elif function_name == "returnVisitorNameandNumber":
+            returnNotCheckedInBesucher(sys.argv[2])
+        elif function_name == "einchecken":
+            einchecken(sys.argv[2],sys.argv[3],sys.argv[4])
+        elif function_name == "auschecken":
+            auschecken(sys.argv[2])
+        elif function_name == "besucherliste":
+            AbfrageBesucher()
+        elif function_name == "aktuellebesucherliste":
+            ArrayAktBesucheranzahl2()
+        elif function_name == "besucherBearbeiten":
+            UpdateBesucher(sys.argv[6],sys.argv[2],sys.argv[3],sys.argv[4],sys.argv[5])
+        elif function_name == "besucherLoeschen":
+            DeleteBesucher(sys.argv[2])
+        else:
+            print("Unknown function")
+    else:
+        print("No function specified")
 
 
 

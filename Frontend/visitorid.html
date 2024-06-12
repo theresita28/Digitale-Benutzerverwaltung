@@ -18,9 +18,9 @@
         <hr>
         <a href="visitorlist.html">Besucherlisten</a>
         <hr>
-        <a href="#">Besucherausweis erstellen</a>
+        <a href="#" style="color: #6200e8;">Besucherausweis erstellen</a>
         <hr>
-        <a href="visitorsettings.html" style="color: #6200e8;">Besucher Verwalten</a>
+        <a href="visitorsettings.html">Besucher Verwalten</a>
         <hr>
         <a href="#">Einstellungen</a>
         <hr>
@@ -43,8 +43,7 @@
       />
     </div>
     <div class="checkinMenu" id="checkInDiv">
-        <input type="search" placeholder="Suche" id="searchField">
-        <button class="addingBtn" onclick="newVisitorInit()" >+</button>
+        <input type="search" placeholder="Suche" style="margin-left: 47px;" id="searchField">
         <h2>Alle Besucher:</h2>
         <ul class="visitorList" id="visitorList">
         </ul>
@@ -87,7 +86,7 @@
   </div>
     <script>
       const searchField = document.getElementById('searchField');
-      searchField.addEventListener('keyup', (e) => {
+    searchField.addEventListener('keyup', (e) => {
         const ul = document.getElementById('visitorList');
         const li = ul.getElementsByTagName('li');
         const filter = e.target.value.toUpperCase();
@@ -101,8 +100,7 @@
           }
         }
       });
-    
-      function newVisitorInit() {
+    function newVisitorInit() {
       document.getElementById('h2InVisitorDiv').innerText = 'Neuer Besucher';
       document.getElementById('createbtn').style.display = "block";
       document.getElementById('Safebtn').style.display = "none";
@@ -149,7 +147,7 @@
         document.getElementById('error').style.display = "block";
       }
 }
-      function safeChanges() {
+    function safeChanges() {
       const vorname = document.getElementById('vorname').value;
       const nachname = document.getElementById('nachname').value;
       const besucher = document.getElementById('besucher').value;
@@ -229,7 +227,7 @@
                       Output = sepearetedData[i].split(' ');
                       span.innerText = Output[0] + ' ' + Output[1] + ' ' + Output[2];
                       li.appendChild(span);
-                      btn.innerText = 'Editieren';
+                      btn.innerText = 'Ausweis erstellen';
                       btn.onclick = function() {
                         editProcessInit(sepearetedData[i]);
                       };

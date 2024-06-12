@@ -18,7 +18,7 @@
         <hr>
         <a href="visitorlist.html">Besucherlisten</a>
         <hr>
-        <a href="#">Besucherausweis erstellen</a>
+        <a href="visitorid.html">Besucherausweis erstellen</a>
         <hr>
         <a href="visitorsettings.html">Besucher Verwalten</a>
         <hr>
@@ -49,7 +49,7 @@
         <button class="button" onclick="showCheckOutDiv()">Auschecken</button>
     </div>
     <div class="checkinMenu" id="checkInDiv">
-        <input type="search" placeholder="Suche">
+        <input type="search" placeholder="Suche" id="searchField">
         <button class="addingBtn" onclick="newVisitorInit()" >+</button>
         <button onclick="hideCheckInDiv()" class="closebtn" >&#10006</button>
         <h2>Besucherverlauf</h2>
@@ -92,19 +92,37 @@
   </div>
   <script>
 
+const searchField = document.getElementById('searchField');
+searchField.addEventListener('keyup', (e) => {
+  const ul = document.getElementById('visitorList');
+  const li = ul.getElementsByTagName('li');
+  const filter = e.target.value.toUpperCase();
+  for (let i = 0; i < li.length; i++) {
+    const span = li[i].getElementsByTagName('span')[0];
+    const txtValue = span.textContent || span.innerText;
+    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+      li[i].style.display = '';
+    } else {
+      li[i].style.display = 'none';
+    }
+  }
+});
+
 function newVisitorInit() {
       document.getElementById('h2InVisitorDiv').innerText = 'Neuer Besucher';
       document.getElementById('eincheckbtn').style.display = "none";
       document.getElementById('erstellbtn').style.display = "block";
       document.getElementById('vorname').value = '';
+      document.getElementById('vorname').disabled = false;
       document.getElementById('nachname').value = '';
-      document.getElementById('besucherlabel').innerHTML = 'Rolle:';
+      document.getElementById('nachname').disabled = false;
+      document.getElementById('besucherlabel').innerHTML = 'Email:';
       document.getElementById('besucher').value = '';
+      document.getElementById('besucher').disabled = false;
+      document.getElementById('ansprechpartnerlabel').innerHTML = 'Rolle:';
       document.getElementById('ansprechpartner').value = '';
       document.getElementById('aufenthaltsort').value = '';
-      document.getElementById('ansprechpartner').style.display = "none";
       document.getElementById('aufenthaltsort').style.display = "none";
-      document.getElementById('ansprechpartnerlabel').style.display = "none";
       document.getElementById('aufenthaltsortlabel').style.display = "none";
       document.getElementById('checkInDiv').style.display = "none";
       document.getElementById('eincheckValidation').style.display = "block";
@@ -113,17 +131,20 @@ function newVisitorInit() {
 function newVisitor() {
       vorname = document.getElementById('vorname').value;
       nachname = document.getElementById('nachname').value;
-      rolle = document.getElementById('besucher').value;
-      if (vorname != "" && nachname != "" && rolle != "") {
+      email = document.getElementById('besucher').value;
+      rolle = document.getElementById('ansprechpartner').value;
+      if (vorname != "" && nachname != "" && rolle != "" && email != "") {
         document.getElementById('error').style.display = "none";
         const functionName = 'besucherAnlegen';
         const arg1 = vorname;
         const arg2 = nachname;
-        const arg3 = rolle;
+        const arg3 = email;
+        const arg4 = rolle;
         let queryString = `function=${functionName}`;
             if (arg1) queryString += `&arg1=${arg1}`;
             if (arg2) queryString += `&arg2=${arg2}`;
             if (arg3) queryString += `&arg3=${arg3}`;
+            if (arg4) queryString += `&arg4=${arg4}`;
         fetch('http://localhost:3000/run-python?' + queryString)
                 .then(response => response.text())
                 .then(data => {
@@ -157,10 +178,17 @@ function newVisitor() {
       document.getElementById('checkInDiv').style.display = "none";
       document.getElementById('eincheckValidation').style.display = "block";
       document.getElementById('besucher').value = id;
+      document.getElementById('besucher').disabled = true;
       document.getElementById('vorname').value = vorname;
+      document.getElementById('vorname').disabled = true;
       document.getElementById('nachname').value = nachname;
+      document.getElementById('nachname').disabled = true;
       document.getElementById('ansprechpartner').value = '';
       document.getElementById('aufenthaltsort').value = '';
+      document.getElementById('besucherlabel').innerHTML = 'BesucherNr.:';
+      document.getElementById('ansprechpartnerlabel').innerHTML = 'Ansprechpartner:';
+      document.getElementById('aufenthaltsort').style.display = "block";
+      document.getElementById('aufenthaltsortlabel').style.display = "block";
     }
 
     function closecheckInProcess() {
@@ -178,12 +206,14 @@ function newVisitor() {
         document.getElementById('error').style.display = "none";
         const functionName = 'einchecken';
         const arg1 = id;
-        const arg2 = ansprechpartner;
+        partner = ansprechpartner.split(' ');
+        const arg2 = partner[0] + partner[1];
         const arg3 = aufenthaltsort;
         let queryString = `function=${functionName}`;
             if (arg1) queryString += `&arg1=${arg1}`;
             if (arg2) queryString += `&arg2=${arg2}`;
             if (arg3) queryString += `&arg3=${arg3}`;
+        console.log(queryString);
         await fetch('http://localhost:3000/run-python?' + queryString)
                 .then(response => response.text())
                 .then(data => {
@@ -200,6 +230,7 @@ function newVisitor() {
 
     async function showCheckInDiv() {
       document.getElementById('checkInDiv').style.display = "block";
+      searchField.value = '';
       const ul = document.getElementById('visitorList');
       ul.innerHTML = '';
       let Count = 0;
@@ -288,11 +319,16 @@ function newVisitor() {
 
     function showCheckOutDiv() {
       document.getElementById('checkInDiv').style.display = "block";
+      searchField.value = '';
       const ul = document.getElementById('visitorList');
       ul.innerHTML = '';
       fetch('http://localhost:3000/run-python?function=aktuelleBesucher')
                 .then(response => response.text())
                 .then(data => {
+                  if (data == "") {
+                    console.log('Keine Besucher');
+                  }
+                  else {
                   var sepearetedData = data.split(/\r?\n|\r|\n/g);
                       for (let i = 0; i < sepearetedData.length; i++) {
                       const li = document.createElement('li');
@@ -318,6 +354,7 @@ function newVisitor() {
                       };
                       ul.appendChild(li);
                       }
+                  }
                 })
                 .catch(error => {
                     console.log(`Error: ${error.message}`);
