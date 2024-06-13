@@ -304,14 +304,13 @@ def AbfrageBesucher():
     except:
         return
 
-def returnNotCheckedInBesucher(besuchernr):
+def returnNotCheckedInBesucher():
     try:
-        zeiger.execute("SELECT * FROM besucher WHERE besuchernr = ?", (besuchernr,))
+        zeiger.execute("SELECT * FROM besucher")
         inhalt = zeiger.fetchall()
-        if isBesucherCheckedIn(besuchernr):
-            return
-        else:
-            print(inhalt[0][1] + " " + inhalt[0][2] + " " + str(inhalt[0][0]))
+        for i in range(len(inhalt)):
+            if not isBesucherCheckedIn(inhalt[i][0]):
+                print(inhalt[i][1] + " " + inhalt[i][2] + " " + str(inhalt[i][0]))
     except:
         return
 
@@ -338,7 +337,7 @@ if __name__ == "__main__":
         elif function_name == "anzahl":
             print(BesucherAnzahl())
         elif function_name == "returnVisitorNameandNumber":
-            returnNotCheckedInBesucher(sys.argv[2])
+            returnNotCheckedInBesucher()
         elif function_name == "einchecken":
             einchecken(sys.argv[2],sys.argv[3],sys.argv[4])
         elif function_name == "auschecken":

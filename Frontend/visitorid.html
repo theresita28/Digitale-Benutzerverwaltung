@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Besucherverwaltung</title>
     <link rel="stylesheet" href="basicstyle.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" integrity="sha512-CNgIRecGo7nphbeZ04Sc13ka07paqdeTu0WR1IM4kNcpmBAUSHSQX0FslNhTDadL4O5SAGapGt4FodqL8My0mA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 <body>
 <div class="maindiv">
@@ -49,44 +50,35 @@
         </ul>
     </div>
     <div id="eincheckValidation">
-      <h2 id="h2InVisitorDiv"></h2>
+      <div class="visitorID">
+        <img src="User.png" class="visitorPB">
+        <div class="textdiv">
+          <h2>Besucherausweis</h2>
+          <h3 id="h2InVisitorDiv">Yannik Fischer</h3>
+        <div class="infirmationDiv">
+          <label>BesucherNr.:</label>
+          <p id="besucherNr"></p>
+        </div>
+        <div class="infirmationDiv">
+          <label>Email:</label>
+          <p id="Email"></p>
+        </div>
+        <div class="infirmationDiv">
+          <label>Rolle:</label>
+          <p id="rolle"></p>
+        </div>
+        </div>
+        <div id="qrcode"></div>
+      </div>
       <button onclick="closecheckInProcess()" class="closebtncheckin" >&#10006</button>
-      <div class="nameDiv">
-      <div class="validationDiv">
-        <label for="vorname">Vorname:</label>
-        <input type="text" id="vorname" name="vorname" required>
-      </div>
-      <div class="validationDiv">
-        <label for="nachname">Nachname:</label>
-        <input type="text" id="nachname" name="nachname" required>
-      </div>
-      </div>
-      <div class="nameDiv">
-      <div class="validationDiv">
-        <label for="besucher" id="besucherlabel">BesucherNr.:</label>
-        <input type="text" id="besucher" disabled="true" name="besucher" required>
-      </div>
-      <div class="validationDiv">
-        <label for="email" id="emaillabel">E-mail:</label>
-        <input type="text" id="email" name="email" required>
-      </div>
-      </div>
-      <div class="nameDiv">
-      <div class="validationDiv">
-        <label for="Rolle" id="Rollelabel">Rolle:</label>
-        <input type="text" id="Rolle" name="Rolle" required>
-      </div>
-      <p id="error">Bitte alle Felder ausfüllen</p>
-      </div>
-      <button class="button" id="createbtn" onclick="newVisitor()" style="display: none; margin-left: 200px;">Erstellen</button>
-      <div class="btndiv">
-      <button class="button" id="Safebtn" onclick="safeChanges()">Speichern</button>
-      <button class="button" id="deletbtn"  onclick="deleteVisitorInit()">Löschen</button>
-      </div>
+      <button class="button" id="createbtn" onclick="printVisitorId()" style="margin-left: 150px; margin-top: 100px;">Drucken</button>
   </div>
     <script>
       const searchField = document.getElementById('searchField');
-    searchField.addEventListener('keyup', (e) => {
+      function printVisitorId() {
+        window.print();
+      }
+      searchField.addEventListener('keyup', (e) => {
         const ul = document.getElementById('visitorList');
         const li = ul.getElementsByTagName('li');
         const filter = e.target.value.toUpperCase();
@@ -100,86 +92,6 @@
           }
         }
       });
-    function newVisitorInit() {
-      document.getElementById('h2InVisitorDiv').innerText = 'Neuer Besucher';
-      document.getElementById('createbtn').style.display = "block";
-      document.getElementById('Safebtn').style.display = "none";
-      document.getElementById('deletbtn').style.display = "none";
-      document.getElementById('vorname').value = '';
-      document.getElementById('nachname').value = '';
-      document.getElementById('besucher').value = '';
-      document.getElementById('besucher').disabled = false;
-      document.getElementById('besucherlabel').innerHTML = 'E-Mail:';
-      document.getElementById('emaillabel').innerHTML = 'Rolle:';
-      document.getElementById('email').value = '';
-      document.getElementById('Rolle').style.display = "none";
-      document.getElementById('Rollelabel').style.display = "none";
-      document.getElementById('checkInDiv').style.display = "none";
-      document.getElementById('eincheckValidation').style.display = "block";
-    }
-    function newVisitor() {
-      vorname = document.getElementById('vorname').value;
-      nachname = document.getElementById('nachname').value;
-      email = document.getElementById('besucher').value;
-      rolle = document.getElementById('email').value;
-      if (vorname != "" && nachname != "" && rolle != "" && email != "") {
-        document.getElementById('error').style.display = "none";
-        const functionName = 'besucherAnlegen';
-        const arg1 = vorname;
-        const arg2 = nachname;
-        const arg3 = email;
-        const arg4 = rolle;
-        let queryString = `function=${functionName}`;
-            if (arg1) queryString += `&arg1=${arg1}`;
-            if (arg2) queryString += `&arg2=${arg2}`;
-            if (arg3) queryString += `&arg3=${arg3}`;
-            if (arg4) queryString += `&arg4=${arg4}`;
-        fetch('http://localhost:3000/run-python?' + queryString)
-                .then(response => response.text())
-                .then(data => {
-                    console.log(data);
-                })
-                .catch(error => {
-                    console.log(`Error: ${error.message}`);
-                });
-      }
-      else {
-        document.getElementById('error').style.display = "block";
-      }
-}
-    function safeChanges() {
-      const vorname = document.getElementById('vorname').value;
-      const nachname = document.getElementById('nachname').value;
-      const besucher = document.getElementById('besucher').value;
-      const email = document.getElementById('email').value;
-      const Rolle = document.getElementById('Rolle').value;
-      if (vorname == '' || nachname == '' || besucher == '' || email == '' || Rolle == '') {
-        document.getElementById('error').style.display = 'block';
-      }
-      else {
-        document.getElementById('error').style.display = "none";
-        const functionName = 'besucherBearbeiten';
-        const arg1 = vorname;
-        const arg2 = nachname;
-        const arg3 = email;
-        const arg4 = Rolle;
-        const arg5 = besucher;
-        let queryString = `function=${functionName}`;
-            if (arg1) queryString += `&arg1=${arg1}`;
-            if (arg2) queryString += `&arg2=${arg2}`;
-            if (arg3) queryString += `&arg3=${arg3}`;
-            if (arg4) queryString += `&arg4=${arg4}`;
-            if (arg5) queryString += `&arg5=${arg5}`;
-        fetch('http://localhost:3000/run-python?' + queryString)
-                .then(response => response.text())
-                .then(data => {
-                    console.log(data);
-                })
-                .catch(error => {
-                    console.log(`Error: ${error.message}`);
-                });
-      }
-    }
     function openNav() {
     document.getElementById("mySidebar").style.width = "300px";
     }
@@ -187,22 +99,6 @@
     /* Set the width of the sidebar to 0 and the left margin of the page content to 0 */
     function closeNav() {
     document.getElementById("mySidebar").style.width = "0";
-    }
-    function deleteVisitorInit() {
-      if (confirm('Möchten Sie den Besucher wirklich löschen?')) {
-        const besucher = document.getElementById('besucher').value;
-        const functionName = 'besucherLoeschen';
-        let queryString = `function=${functionName}`;
-            if (besucher) queryString += `&arg1=${besucher}`;
-        fetch('http://localhost:3000/run-python?' + queryString)
-                .then(response => response.text())
-                .then(data => {
-                    console.log(data);
-                })
-                .catch(error => {
-                    console.log(`Error: ${error.message}`);
-                });
-      }
     }
     window.addEventListener('load', () => {
       const ul = document.getElementById('visitorList');
@@ -229,7 +125,7 @@
                       li.appendChild(span);
                       btn.innerText = 'Ausweis erstellen';
                       btn.onclick = function() {
-                        editProcessInit(sepearetedData[i]);
+                        idCreateInit(sepearetedData[i]);
                       };
                       btn.style.display = 'none';
                       li.appendChild(btn);
@@ -259,23 +155,71 @@
         }
       }
     }
-    function editProcessInit(data) {
-      const splittedData = data.split(' ');
-      document.getElementById('Safebtn').innerHTML = 'Speichern';
-      document.getElementById('deletbtn').style.display = "block";
-      document.getElementById('vorname').value = splittedData[0];
-      document.getElementById('nachname').value = splittedData[1];
-      document.getElementById('besucher').value = splittedData[2];
-      document.getElementById('email').value = splittedData[3];
-      document.getElementById('Rolle').value = splittedData[4];
-      document.getElementById('h2InVisitorDiv').innerText = 'Besucher bearbeiten';
-      document.getElementById('eincheckValidation').style.display = 'block';
-    }
     function closecheckInProcess() {
       document.getElementById('eincheckValidation').style.display = 'none';
+      document.getElementById('qrcode').innerHTML = '';
+    }
+    function idCreateInit(data) {
+      document.getElementById('eincheckValidation').style.display = 'block';
+      const output = data.split(' ');
+      document.getElementById('h2InVisitorDiv').innerText = output[0] + ' ' + output[1];
+      document.getElementById('besucherNr').innerText = output[2];
+      document.getElementById('Email').innerText = output[3];
+      document.getElementById('rolle').innerText = output[4];
+      var qrcode = new QRCode(document.getElementById("qrcode"), {
+        text: "Besucher Nummer: " + output[2],
+        width: 128,
+        height: 128,
+        colorDark : "#000000",
+        colorLight : "#ffffff",
+        correctLevel : QRCode.CorrectLevel.H
+      });
     }
    </script>
     <style>
+    .infirmationDiv {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 16px;
+    }
+    #qrcode {
+        position: absolute;
+        top: 50px;
+        right: 130px;
+    }
+    .infirmationDiv label {
+        font-weight: bold;
+    }
+    .infirmationDiv p {
+        font-weight: normal;
+        margin: 0px;
+    }
+    .visitorID {
+        display: flex;
+        gap: 15px;
+        border: solid 1px black;
+        width: 45rem;
+    }
+    @media print {
+    .visitorID {
+        background-color: white;
+        height: 100%;
+        width: 100%;
+        position: fixed;
+        top: 0;
+        left: 0;
+        margin: 0;
+    }
+    .visitorID .visitorPB {
+        width: 256px;
+        height: 244px;
+    }
+}
+    h3 {
+        display: flex;
+        font-size: 30px;
+    }
     #checkInDiv {
         background-color: #F8F8F8;
         width: 50rem;
@@ -327,16 +271,16 @@
     margin-right: 10px;
     }
     #eincheckValidation {
-  background-color: #F8F8F8;
-  width: 50rem;
-  height: 500px;
-  position: absolute;
-  top: 25%;
-  left: 28%;
-  padding: 10px;
-  padding-left: 20px;
-  border-radius: 3px;
-  display: none;
+      background-color: #F8F8F8;
+      width: 50rem;
+      height: 500px;
+      position: absolute;
+      top: 25%;
+      left: 25%;
+      padding: 10px;
+      padding-left: 20px;
+      border-radius: 5px;
+      display: none;
 }  
 .validationDiv{
   display: flex;
@@ -365,21 +309,11 @@
   color: #999898;
   padding: none;
   position: relative;
-  top: -115px;
-  left: 570px;
-}
-#error {
-  color: red;
-  font-size: 18px;
-  margin-top: 30px;
-  margin-left: 5px;
-  display: none;
+  left: 775px;
+  top: -360px;
 }
 .btndiv {
   display: flex;
   gap: 20px;
-}
-#deletbtn {
-  background-color: red;
 }
     </style>

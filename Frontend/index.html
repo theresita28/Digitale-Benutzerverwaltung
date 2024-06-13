@@ -22,7 +22,7 @@
         <hr>
         <a href="visitorsettings.html">Besucher Verwalten</a>
         <hr>
-        <a href="#">Einstellungen</a>
+        <a href="Settings.html">Einstellungen</a>
         <hr>
     </div>
     <div class="topBar">
@@ -233,20 +233,8 @@ function newVisitor() {
       searchField.value = '';
       const ul = document.getElementById('visitorList');
       ul.innerHTML = '';
-      let Count = 0;
-      await fetch('http://localhost:3000/run-python?function=anzahl')
-                .then(response => response.text())
-                .then(data => {
-                      Count = data;
-                })
-                .catch(error => {
-                    console.log(`Error: ${error.message}`);
-                });
-      for (let i = 1; i <= Count; i++) {
-        const functionName = 'returnVisitorNameandNumber';
-        const arg1 = i;
-        let queryString = `function=${functionName}`;
-            if (arg1) queryString += `&arg1=${arg1}`;
+      const functionName = 'returnVisitorNameandNumber';
+      let queryString = `function=${functionName}`;
         await fetch('http://localhost:3000/run-python?' + queryString)
                 .then(response => response.text())
                 .then(data => {
@@ -254,27 +242,37 @@ function newVisitor() {
                       console.log('Besucher ist bereits eingecheckt');
                     }
                     else {
-                    const li = document.createElement('li');
-                    const img = document.createElement('img');
-                    img.src = 'User.png';
-                    img.alt = 'User';
-                    img.width = 50;
-                    img.height = 50;
-                    li.appendChild(img);
-                    const span = document.createElement('span');
-                    span.innerText = data;
-                    li.appendChild(span);
-                    li.id = i;
-                    li.onclick = function() {
-                      checkInProcessInit(data);
-                    };
-                    ul.appendChild(li);
-                  }
+                    data = data.split(/\r?\n|\r|\n/g);
+                    for (let i = 0; i < data.length; i++) {
+                      const li = document.createElement('li');
+                      const img = document.createElement('img');
+                      const btn = document.createElement('button');
+                      img.src = 'User.png';
+                      img.alt = 'User';
+                      img.width = 50;
+                      img.height = 50;
+                      li.appendChild(img);
+                      const span = document.createElement('span');
+                      span.innerText = data[i];
+                      li.appendChild(span);
+                      btn.innerText = 'Einchecken';
+                      btn.onclick = function() {
+                        checkInProcessInit(data[i]);
+                      };
+                      btn.style.display = 'none';
+                      li.appendChild(btn);
+                      li.id = i;
+                      li.onclick = function() {
+                        listSelected(i)
+                      };
+                      ul.appendChild(li);
+                    }
+                    }
                 })
                 .catch(error => {
                     console.log(`Error: ${error.message}`);
                 });
-    }
+    
     hastobeupdated = false;
     } 
     
