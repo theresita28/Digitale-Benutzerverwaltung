@@ -324,6 +324,27 @@ def isBesucherCheckedIn(besuchernr):
             return False
     except:
         return
+zeitNachDerGeloeschtWird = 30
+
+def setzeZeitNachDerGeloeschtWird(zeit):
+    global zeitNachDerGeloeschtWird
+    zeitNachDerGeloeschtWird = zeit
+    print("Zeit nach der geloescht wird: " + str(zeitNachDerGeloeschtWird))
+
+def loescheBesuchernachInaktivitaet():
+    try:
+        zeiger.execute("SELECT * FROM besucherliste WHERE")
+        inhalt = zeiger.fetchall()
+        for i in range(len(inhalt)):
+            eincheckzeit = datetime.strptime(inhalt[i][1], "%d.%m.%Y %H:%M:%S")
+            if (datetime.now() - eincheckzeit).days > zeitNachDerGeloeschtWird:
+                zeiger.execute("DELETE FROM besucher WHERE besuchernr = ?", (inhalt[i][0],))
+                zeiger.execute("DELETE FROM besucherliste WHERE besucher = ?", (inhalt[i][0],))
+                verbindung.commit()
+    except:
+        return
+
+loescheBesuchernachInaktivitaet()
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
@@ -350,6 +371,8 @@ if __name__ == "__main__":
             UpdateBesucher(sys.argv[6],sys.argv[2],sys.argv[3],sys.argv[4],sys.argv[5])
         elif function_name == "besucherLoeschen":
             DeleteBesucher(sys.argv[2])
+        elif function_name == "timeupdate":
+            setzeZeitNachDerGeloeschtWird(sys.argv[2])
         else:
             print("Unknown function")
     else:
