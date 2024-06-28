@@ -54,6 +54,7 @@
           </tr>
         </table>
       </div>
+      <div class="divider">
       <div>
         <h2>Aktuelle Besucher:</h2>
         <table id="checkInVisitorList">
@@ -69,8 +70,139 @@
           </tr>
         </table>
       </div>
+      <div>
+        <h2>Besucher zum Zeitpunkt: <input type="date" id="datepicker" value="2024-06-28"/></h2>
+        <table id="timeList">
+          <tr>
+            <th>Name</th>
+            <th>BesucherNummer</th>
+            <th>Rolle</th>
+            <th>E-Mail</th>
+            <th>CheckIn-Date</th>
+            <th>CheckIn-Time</th>
+            <th>Checkout-Date</th>
+            <th>Checkout-Time</th>
+          </tr>
+        </table>
+      </div>
+      </div>
     </div>
     <script>
+    const datepicker = document.getElementById('datepicker');
+    datepicker.addEventListener('change', () => {
+      const tb3 = document.getElementById('timeList');
+      tb3.innerHTML = '<tr><th>Name</th><th>BesucherNummer</th><th>Rolle</th><th>E-Mail</th><th>CheckIn-Date</th><th>CheckIn-Time</th><th>Checkout-Date</th><th>Checkout-Time</th></tr>';
+      const time = datepicker.value;
+      const timeformat = time.split('-');
+      const formatedtime = timeformat[2] + '.' + timeformat[1] + '.' + timeformat[0];
+      const functionName = 'besucherlisteZeit';
+      let queryString = `function=${functionName}`;
+            if (formatedtime) queryString += `&arg1=${formatedtime}`;
+      fetch('http://localhost:3000/run-python?' + queryString)
+                .then(response => response.text())
+                .then(data => {
+                  if (data == "") {
+                    console.log('Keine Besucher');
+                  }
+                  else {
+                  var sepearetedData = data.split(/\r?\n|\r|\n/g);
+                      for (let i = 0; i < sepearetedData.length; i++) {
+                      const tabledata = sepearetedData[i].split(' ');
+                      const tr = document.createElement('tr');
+                      const td = document.createElement('td');
+                      td.innerText = tabledata[0] + ' ' + tabledata[1];
+                      tr.appendChild(td);
+                      tb3.appendChild(tr);
+                      const td2 = document.createElement('td');
+                      td2.innerText = tabledata[2];
+                      tr.appendChild(td2);
+                      tb3.appendChild(tr);
+                      const td3 = document.createElement('td');
+                      td3.innerText = tabledata[3];
+                      tr.appendChild(td3);
+                      tb3.appendChild(tr);
+                      const td4 = document.createElement('td');
+                      td4.innerText = tabledata[4];
+                      tr.appendChild(td4);
+                      tb3.appendChild(tr);
+                      const td5 = document.createElement('td');
+                      td5.innerText = tabledata[5];
+                      tr.appendChild(td5);
+                      tb3.appendChild(tr);
+                      const td6 = document.createElement('td');
+                      td6.innerText = tabledata[6];
+                      tr.appendChild(td6);
+                      tb3.appendChild(tr);
+                      const td7 = document.createElement('td');
+                      td7.innerText = tabledata[7];
+                      tr.appendChild(td7);
+                      tb3.appendChild(tr);
+                      const td8 = document.createElement('td');
+                      td8.innerText = tabledata[8];
+                      tr.appendChild(td8);
+                      tb3.appendChild(tr);
+                      }
+                  }
+                })
+                .catch(error => {
+                    console.log(`Error: ${error.message}`);
+                });
+    });
+    function test() {
+      const tb2 = document.getElementById('timeList');
+      const time = "28.06.2024";
+      const functionName = 'besucherlisteZeit';
+      let queryString = `function=${functionName}`;
+            if (time) queryString += `&arg1=${time}`;
+      fetch('http://localhost:3000/run-python?' + queryString)
+                .then(response => response.text())
+                .then(data => {
+                  if (data == "") {
+                    console.log('Keine Besucher');
+                  }
+                  else {
+                  var sepearetedData = data.split(/\r?\n|\r|\n/g);
+                      for (let i = 0; i < sepearetedData.length; i++) {
+                      const tabledata = sepearetedData[i].split(' ');
+                      const tr = document.createElement('tr');
+                      const td = document.createElement('td');
+                      td.innerText = tabledata[0] + ' ' + tabledata[1];
+                      tr.appendChild(td);
+                      tb2.appendChild(tr);
+                      const td2 = document.createElement('td');
+                      td2.innerText = tabledata[2];
+                      tr.appendChild(td2);
+                      tb2.appendChild(tr);
+                      const td3 = document.createElement('td');
+                      td3.innerText = tabledata[3];
+                      tr.appendChild(td3);
+                      tb2.appendChild(tr);
+                      const td4 = document.createElement('td');
+                      td4.innerText = tabledata[4];
+                      tr.appendChild(td4);
+                      tb2.appendChild(tr);
+                      const td5 = document.createElement('td');
+                      td5.innerText = tabledata[5];
+                      tr.appendChild(td5);
+                      tb2.appendChild(tr);
+                      const td6 = document.createElement('td');
+                      td6.innerText = tabledata[6];
+                      tr.appendChild(td6);
+                      tb2.appendChild(tr);
+                      const td7 = document.createElement('td');
+                      td7.innerText = tabledata[7];
+                      tr.appendChild(td7);
+                      tb2.appendChild(tr);
+                      const td8 = document.createElement('td');
+                      td8.innerText = tabledata[8];
+                      tr.appendChild(td8);
+                      }
+                  }
+                })
+                .catch(error => {
+                    console.log(`Error: ${error.message}`);
+                });
+    }
         function openNav() {
     document.getElementById("mySidebar").style.width = "300px";
     }
@@ -154,6 +286,59 @@
                       td7.innerText = tabledata[7];
                       tr.appendChild(td7);
                       tb2.appendChild(tr);
+                      const td8 = document.createElement('td');
+                      td8.innerText = tabledata[8];
+                      tr.appendChild(td8);
+                      }
+                  }
+                })
+                .catch(error => {
+                    console.log(`Error: ${error.message}`);
+                });
+      const tb3 = document.getElementById('timeList');
+      const time = "28.06.2024";
+      const functionName = 'besucherlisteZeit';
+      let queryString = `function=${functionName}`;
+            if (time) queryString += `&arg1=${time}`;
+      fetch('http://localhost:3000/run-python?' + queryString)
+                .then(response => response.text())
+                .then(data => {
+                  if (data == "") {
+                    console.log('Keine Besucher');
+                  }
+                  else {
+                  var sepearetedData = data.split(/\r?\n|\r|\n/g);
+                      for (let i = 0; i < sepearetedData.length; i++) {
+                      const tabledata = sepearetedData[i].split(' ');
+                      const tr = document.createElement('tr');
+                      const td = document.createElement('td');
+                      td.innerText = tabledata[0] + ' ' + tabledata[1];
+                      tr.appendChild(td);
+                      tb3.appendChild(tr);
+                      const td2 = document.createElement('td');
+                      td2.innerText = tabledata[2];
+                      tr.appendChild(td2);
+                      tb3.appendChild(tr);
+                      const td3 = document.createElement('td');
+                      td3.innerText = tabledata[3];
+                      tr.appendChild(td3);
+                      tb3.appendChild(tr);
+                      const td4 = document.createElement('td');
+                      td4.innerText = tabledata[4];
+                      tr.appendChild(td4);
+                      tb3.appendChild(tr);
+                      const td5 = document.createElement('td');
+                      td5.innerText = tabledata[5];
+                      tr.appendChild(td5);
+                      tb3.appendChild(tr);
+                      const td6 = document.createElement('td');
+                      td6.innerText = tabledata[6];
+                      tr.appendChild(td6);
+                      tb3.appendChild(tr);
+                      const td7 = document.createElement('td');
+                      td7.innerText = tabledata[7];
+                      tr.appendChild(td7);
+                      tb3.appendChild(tr);
                       const td8 = document.createElement('td');
                       td8.innerText = tabledata[8];
                       tr.appendChild(td8);

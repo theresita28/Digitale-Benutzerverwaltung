@@ -257,17 +257,19 @@ zeitpunkt = "12.06.2024"
 def AbfrageBesucheranzahl(zeitpunkt):
     try:
         zeiger.execute("SELECT COUNT(*) FROM besucherliste WHERE auscheckzeit LIKE ? OR eincheckzeit LIKE ?",(zeitpunkt + '%',zeitpunkt + '%'))
-        anzahl = zeiger.fetchone()
         #print(anzahl[0])
 
         zeiger.execute("""SELECT b1.besucher, b2.vorname, b2.nachname,b2.email, b2.rolle, b1.eincheckzeit, b1.auscheckzeit, b1.ansprechpartner, b1.aufenthaltsort
                     FROM besucherliste b1, besucher b2 
                     WHERE (auscheckzeit LIKE ? OR eincheckzeit LIKE ?) and b1.besucher = b2.besuchernr""",(zeitpunkt + '%',zeitpunkt + '%'))
         inhalt = zeiger.fetchall()
-        #print(inhalt)
-        print("Es wurden " + str(anzahl[0]) + " Besucher zum angegebenen Zeitpunkt gefunden: " + str(inhalt))
+        for i in range(len(inhalt)):
+            if inhalt[i][1] == inhalt[i-1][1]:
+                continue
+            else:
+                print(inhalt[i][1] + " " + inhalt[i][2] + " " + str(inhalt[i][0]) + " " + inhalt[i][3] + " " + inhalt[i][4] + " " + inhalt[i][5] + " " + inhalt[i][6] + " " + inhalt[i][7])
     except:
-        print("Error: Abfrage Besucheranzahl")
+        return
 #AbfrageBesucheranzahl(zeitpunkt)
 
 #Aktualisieren/Löschen der Besucherdaten---------------------------------------------------
@@ -367,6 +369,8 @@ if __name__ == "__main__":
             AbfrageBesucher()
         elif function_name == "aktuellebesucherliste":
             ArrayAktBesucheranzahl2()
+        elif function_name == "besucherlisteZeit":
+            AbfrageBesucheranzahl(sys.argv[2])
         elif function_name == "besucherBearbeiten":
             UpdateBesucher(sys.argv[6],sys.argv[2],sys.argv[3],sys.argv[4],sys.argv[5])
         elif function_name == "besucherLoeschen":
